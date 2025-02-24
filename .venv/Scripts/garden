@@ -1,4 +1,4 @@
-#!D:\PUNTO DE VENTA\pdv-main\pdv-main\11_2_VentaVista_y_CSV\.venv\Scripts\python.exe
+#!D:\PUNTO_DE_VENTA\pdv-main\pdv-main\11_2_VentaVista_y_CSV\.venv\Scripts\python.exe
 
 import sys
 import argparse
