@@ -264,7 +264,6 @@ class VentasWindow(BoxLayout):
 	def __init__(self, actualizar_productos_callback, **kwargs):
 		super().__init__(**kwargs)
 		self.total = 0.0
-		self.recibido = 0.0
 		self.ids.rvs.modificar_producto=self.modificar_producto
 		self.actualizar_productos=actualizar_productos_callback
 
@@ -332,7 +331,6 @@ class VentasWindow(BoxLayout):
 		if self.ids.rvs.data:
 			popup = PagarPopup(self.total, self.pagado)
 			popup.open()
-			self.recibido = popup.recibido
 			
 			# Bloquear el botón de pagar
 			self.ids.pagar.disabled = True
@@ -343,7 +341,8 @@ class VentasWindow(BoxLayout):
 		else:
 			self.ids.notificacion_falla.text = 'No hay nada que pagar'
 
-	def pagado(self):
+	def pagado(self, recibido = 0.0):
+		recibido = float(recibido)
 		self.ids.notificacion_exito.text='Compra realizada con exito'
 		self.ids.notificacion_falla.text=''
 		self.ids.total.text="{:.2f}".format(self.total)
@@ -372,9 +371,9 @@ class VentasWindow(BoxLayout):
 			QueriesSQLite.execute_query(connection, actualizar, producto_tuple)
 		self.actualizar_productos(actualizar_admin)
 
-		cambio =float(self.recibido)-float(self.total)
+		cambio =float(recibido)-float(self.total)
 		items = [[producto['nombre'],producto['precio'],producto['cantidad_carrito']] for producto in self.ids.rvs.data]
-		filename = self.generador.create_receipt(items, self.recibido, self.total, cambio)
+		filename = self.generador.create_receipt(items, recibido, self.total, cambio)
 		self.generador.open_print_dialog(filename)
 
 	def nueva_compra(self, desde_popup=False):

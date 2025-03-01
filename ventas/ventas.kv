@@ -176,7 +176,7 @@
 				id: boton_pagar
 				disabled: True
 				text: 'Terminar Pago'
-				on_release: root.pagado()
+				on_release: root.pagado(root.ids.recibido.text)
 			Button:
 				text: 'Cancelar'
 				on_release: root.dismiss()
