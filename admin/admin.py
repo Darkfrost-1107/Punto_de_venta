@@ -22,8 +22,6 @@ import os
 from openpyxl import Workbook
 from openpyxl.styles import Font
 
-from gdrive import GDriveAPI
-
 Builder.load_file('admin/admin.kv')
 
 class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior,
@@ -694,7 +692,6 @@ class AdminWindow(BoxLayout):
 		self.dropdown = CustomDropDown(self.cambiar_vista)				# nuevo
 		self.ids.cambiar_vista.bind(on_release=self.dropdown.open)		# nuevo
 
-		self.gdrive = GDriveAPI()
 		self.db_file = 'pdvDB.sqlite'
 		
 		
@@ -712,23 +709,6 @@ class AdminWindow(BoxLayout):
 
 	def actualizar_productos(self, productos):
 		self.ids.vista_productos.actualizar_productos(productos)
-
-	def backup_database(self):
-		"""Backup the database and show a popup with the result."""
-		db_file = 'pdvDB.sqlite'
-		backup_file_id = self.gdrive.backup(db_file, remote_name='pdvDB_backup.sqlite')
-		if backup_file_id:
-			self.show_popup("Backup Successful", f"Backup file ID: {backup_file_id}")
-		else:
-			self.show_popup("Backup Failed", "Failed to backup the database.")
-
-	def restore_database(self):
-		"""Restore the database and show a popup with the result."""
-		restored = self.gdrive.restore('pdvDB_backup.sqlite', 'pdvDB.sqlite')
-		if restored:
-			self.show_popup("Restore Successful", "Database restored successfully!")
-		else:
-			self.show_popup("Restore Failed", "Failed to restore the database.")
 
 	def show_popup(self, title, message):
 		"""Show a popup with the given title and message."""
