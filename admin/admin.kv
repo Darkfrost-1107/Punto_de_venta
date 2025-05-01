@@ -488,7 +488,7 @@
 				on_release: root.crear_excel()
 
 <VistaCompras>:
-	name: 'Compras'
+	name: 'Compra'
 	BoxLayout:
 		orientation: 'vertical'
 		BoxLayout:
@@ -587,22 +587,23 @@
         text: 'Productos'
         size_hint_y: None
         height: 44
-        on_release: root.vista(self.text)
+        on_release: root.vista('Productos')
+		#self.text
     Button:
         text: 'Ventas'
         size_hint_y: None
         height: 44
-        on_release: root.vista(self.text)
+        on_release: root.vista('Ventas')
     Button:
         text: 'Compras'
         size_hint_y: None
         height: 44
-        #on_release: root.vista(self.text)
+        on_release: root.vista('Compra')
     Button:
         text: 'Usuarios'
         size_hint_y: None
         height: 44
-        on_release: root.vista(self.text)
+        on_release: root.vista('Usuarios')
 
 
 <AdminWindow>:

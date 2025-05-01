@@ -480,10 +480,67 @@ class InfoVentaPopup(Popup):
 		self.ids.total_dinero.text="$ "+str("{:.2f}".format(total_dinero))
 		self.ids.info_rv.agregar_datos(self.venta)
 
+# class VistaCompras(Screen):
+# 	productos_actuales=[]
+# 	def __init__(self, **kwargs):
+# 		super().__init__(**kwargs)
 class VistaCompras(Screen):
-	productos_actuales=[]
-	def __init__(self, **kwargs):
-		super().__init__(**kwargs)
+    productos_actuales = []
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        Clock.schedule_once(self.cargar_venta, 1)  # Carga los datos al entrar en la vista
+
+    def cargar_venta(self, choice='Default'):
+        connection = QueriesSQLite.create_connection("pdvDB.sqlite")
+        compras = []
+        if choice == 'Default':  # Cargar compras de hoy
+            query = "SELECT * FROM compras WHERE fecha = date('now')"
+        elif choice == 'Date':  # Cargar compras de una fecha específica
+            fecha = self.ids.single_date.text
+            query = f"SELECT * FROM compras WHERE fecha = '{fecha}'"
+        elif choice == 'Range':  # Cargar compras en un rango de fechas
+            fecha_inicio = self.ids.initial_date.text
+            fecha_fin = self.ids.last_date.text
+            query = f"SELECT * FROM compras WHERE fecha BETWEEN '{fecha_inicio}' AND '{fecha_fin}'"
+        else:
+            return
+
+        compras_sql = QueriesSQLite.execute_read_query(connection, query)
+        if compras_sql:
+            for compra in compras_sql:
+                compras.append({
+                    'hashtag': compra[0],
+                    'nombre': compra[1],
+                    'productos': compra[2],
+                    'total': compra[3],
+                    'hora': compra[4],
+                    'fecha': compra[5]
+                })
+
+        # Actualiza el RecycleView con los datos
+        self.ids.ventas_rv.data = compras
+        self.ids.final_sum.text = f"$ {sum([c['total'] for c in compras]):.2f}"
+
+    def crear_csv(self):
+        connection = QueriesSQLite.create_connection("pdvDB.sqlite")
+        query = "SELECT * FROM compras"
+        compras_sql = QueriesSQLite.execute_read_query(connection, query)
+
+        with open("compras.csv", "w", newline='', encoding="utf-8") as file:
+            writer = csv.writer(file)
+            writer.writerow(["#", "Nombre", "Productos", "Total", "Hora", "Fecha"])
+            for compra in compras_sql:
+                writer.writerow(compra)
+
+        print("Archivo CSV creado exitosamente.")
+
+    def mas_info(self):
+        seleccion = self.ids.ventas_rv.data
+        if seleccion:
+            print(f"Información de la compra seleccionada: {seleccion}")
+        else:
+            print("No se ha seleccionado ninguna compra.")
 
 # nueva clase creada y tabien en kv
 class VistaVentas(Screen):
@@ -697,6 +754,7 @@ class AdminWindow(BoxLayout):
 		
 	def cambiar_vista(self, cambio=False, vista=None):
 		if cambio:
+			print('Cambiando a la vista: ', vista)
 			self.vista_actual=vista
 			self.vista_manager.current=self.vista_actual
 			self.dropdown.dismiss()
@@ -706,6 +764,18 @@ class AdminWindow(BoxLayout):
 
 	def venta(self):
 		self.parent.parent.current='scrn_ventas'
+		print('Cambiando a la vista: ', self.parent.parent.current)
+	
+	def compra(self):
+		self.parent.parent.current='scrn_compras'
+		print('Cambiando a la vista: ', self.parent.parent.current)
+	# def compra(self):
+	# 	app = App.get_running_app()
+	# 	screen_manager = app.root.ids.scrn_mngr_main  # Accede al ScreenManager principal
+	# 	screen_manager.current = 'scrn_compras'  
+	# 	self.parent.parent.current='scrn_compras'
+	# 	print('Cambiando a la vista: ', self.parent.parent.current)
+	# 	print('Cambiando a la vista: ', screen_manager.current)
 
 	def actualizar_productos(self, productos):
 		self.ids.vista_productos.actualizar_productos(productos)
