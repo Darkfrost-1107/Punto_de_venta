@@ -4,12 +4,12 @@
 
 <BotonOscuro@Button>:
 	background_normal: ''
-	background_color: hex('#393939')
+	background_color: hex('#1BB2E4')
 
 <LabelOscuro@Label>:
 	canvas.before:
 		Color:
-			rgba: hex('#393939')
+			rgba: hex('#1BB2E4')
 		Rectangle:
 			size: self.size
 			pos: self.pos
@@ -18,7 +18,7 @@
     # Draw a background to indicate selection
     canvas.before:
         Color:
-            rgba: hex('#C9F3EF') if self.selected else hex('#F0F0F0')
+            rgba: hex('#96DCF3') if self.selected else hex('#C3EBF8')
         Rectangle:
             pos: self.pos
             size: self.size
@@ -46,7 +46,7 @@
 <SelectableBoxLayoutPopup>:
 	canvas.before:
 		Color:
-			rgba: hex('#7A9B87') if self.selected else hex('#393939')   
+			rgba: hex('#7A9B87') if self.selected else hex('#1BB2E4')   
 		Rectangle:
 			size: self.size
 			pos: self.pos
@@ -202,7 +202,7 @@
 <ComprasWindow>:
 	canvas.before:
 		Color:
-			rgba: hex('#24B0AE')
+			rgba: hex('#E8F7FC')
 		Rectangle:
 			size: self.size
 			pos: self.pos
@@ -247,7 +247,7 @@
 	BoxLayout:
 		canvas.before:
 			Color:
-				rgba: hex('#FFFFFF')
+				rgba: hex('#C3EBF8')
 			Rectangle:
 				size: self.size
 				pos: self.pos
