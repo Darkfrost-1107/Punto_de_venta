@@ -110,7 +110,7 @@ class SelectableVentaLabel(RecycleDataViewBehavior, BoxLayout):
 		self.ids['_hashtag'].text = str(1+index)
 		self.ids['_username'].text = data['username']
 		self.ids['_cantidad'].text = str(data['productos'])
-		self.ids['_total'].text = '$ '+str("{:.2f}".format(data['total']))
+		self.ids['_total'].text = 'S/.'+str("{:.2f}".format(data['total']))
 		self.ids['_time'].text = str(data['fecha'].strftime("%H:%M:%S"))
 		self.ids['_date'].text = str(data['fecha'].strftime("%d/%m/%Y"))
 		return super(SelectableVentaLabel, self).refresh_view_attrs(
@@ -477,7 +477,7 @@ class InfoVentaPopup(Popup):
 			total_items+=articulo['cantidad']
 			total_dinero+=articulo['total']
 		self.ids.total_items.text=str(total_items)
-		self.ids.total_dinero.text="$ "+str("{:.2f}".format(total_dinero))
+		self.ids.total_dinero.text="S/."+str("{:.2f}".format(total_dinero))
 		self.ids.info_rv.agregar_datos(self.venta)
 
 # class VistaCompras(Screen):
@@ -520,7 +520,7 @@ class VistaCompras(Screen):
 
         # Actualiza el RecycleView con los datos
         self.ids.ventas_rv.data = compras
-        self.ids.final_sum.text = f"$ {sum([c['total'] for c in compras]):.2f}"
+        self.ids.final_sum.text = f"S/.{sum([c['total'] for c in compras]):.2f}"
 
     def crear_csv(self):
         connection = QueriesSQLite.create_connection("pdvDB.sqlite")
@@ -719,7 +719,7 @@ class VistaVentas(Screen):
 					_ventas.append({"username": venta[3], "productos": count, "total": venta[1], "fecha": datetime.strptime(venta[2], '%Y-%m-%d %H:%M:%S.%f')})
 				self.ids.ventas_rv.agregar_datos(_ventas)
 				self.productos_actuales=_total_productos
-		self.ids.final_sum.text='$ '+str("{:.2f}".format(final_sum))
+		self.ids.final_sum.text='S/.'+str("{:.2f}".format(final_sum))
 		self.ids.initial_date.text=''
 		self.ids.last_date.text=''
 		self.ids.single_date.text=''

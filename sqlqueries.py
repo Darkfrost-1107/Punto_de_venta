@@ -1,17 +1,57 @@
 import sqlite3
 from sqlite3 import Error
+from kivy.utils import platform
 
 class QueriesSQLite:
     def create_connection(path):
         connection = None
         try:
-            connection = sqlite3.connect(path)
+            connection = sqlite3.connect(QueriesSQLite.get_database_path(path))
             print("Connection to SQLite DB successful")
         except Error as e:
             print(f"The error '{e}' occurred")
 
         return connection
 
+    def get_database_path(db_name="pdvDB.sqlite"):
+        """
+        Obtener la ruta correcta de la base de datos según la plataforma
+        
+        :param db_name: Nombre del archivo de base de datos
+        :return: Ruta completa del archivo de base de datos
+        """
+        if platform == 'android':
+            try:
+                # Opción 1: Usar android.storage (recomendado)
+                from android.storage import app_storage_path
+                storage_path = app_storage_path()
+                db_path = os.path.join(storage_path, db_name)
+                print(f"📱 Android storage path: {storage_path}")
+                return db_path
+                
+            except ImportError:
+                # Fallback para versiones antiguas o testing
+                try:
+                    # Opción 2: Usar directorio de datos de la app
+                    from kivy.app import App
+                    app = App.get_running_app()
+                    if app:
+                        app_dir = app.user_data_dir
+                        db_path = os.path.join(app_dir, db_name)
+                        print(f"📱 App data dir: {app_dir}")
+                        return db_path
+                except:
+                    pass
+                
+                # Opción 3: Fallback hardcoded para Android
+                fallback_path = f"/data/data/{get_package_name()}/files/{db_name}"
+                print(f"📱 Android fallback path: {fallback_path}")
+                return fallback_path
+        else:
+            # Desktop: usar directorio actual
+            db_path = os.path.abspath(db_name)
+            print(f"💻 Desktop path: {db_path}")
+            return db_path
     # added return
     def execute_query(connection, query, data_tuple):
         cursor = connection.cursor()

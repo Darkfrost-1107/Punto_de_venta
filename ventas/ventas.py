@@ -307,21 +307,21 @@ class VentasWindow(BoxLayout):
 
 	def agregar_producto(self, articulo):
 		self.total+=articulo['precio']
-		self.ids.sub_total.text= '$ '+"{:.2f}".format(self.total)
+		self.ids.sub_total.text= 'S/. '+"{:.2f}".format(self.total)
 		self.ids.rvs.agregar_articulo(articulo)
 
 
 	def eliminar_producto(self):
 		menos_precio=self.ids.rvs.eliminar_articulo()
 		self.total-=menos_precio
-		self.ids.sub_total.text='$ '+"{:.2f}".format(self.total)
+		self.ids.sub_total.text='S/. '+"{:.2f}".format(self.total)
 
 	def modificar_producto(self, cambio=True, nuevo_total=None):
 		if cambio:	
 			self.ids.rvs.modificar_articulo()
 		else:
 			self.total=nuevo_total
-			self.ids.sub_total.text='$ '+"{:.2f}".format(self.total)
+			self.ids.sub_total.text='S/. '+"{:.2f}".format(self.total)
 
 	def actualizar_hora(self, *args):
 		self.ahora=self.ahora+timedelta(seconds=1)
