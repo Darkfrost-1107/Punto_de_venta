@@ -16,12 +16,12 @@ class GeneradorRecibos:
         self.folder = folder
         self.store_name = store_name
         self.store_address = store_address
-
+         
         # Create the folder if it doesn't exist
         if not os.path.exists(self.folder):
             os.makedirs(self.folder)
 
-    def create_receipt(self, items, payment, total, change):
+    def create_receipt(self, items, payment, total, cambio):
         """
         Generate a receipt PDF with the given items, payment, total, and change.
         
@@ -31,6 +31,9 @@ class GeneradorRecibos:
         :param change: Change to be returned to the customer.
         :return: Path to the generated PDF file.
         """
+        #self.total=total
+        
+
         # Generate a unique ticket number based on existing files
         ticket_number = f"{len([name for name in os.listdir(self.folder) if os.path.isfile(os.path.join(self.folder, name))]):05d}"
         filename = os.path.join(self.folder, f'recibo_{datetime.now().strftime("%d%m%y")}_{ticket_number}.pdf')
@@ -42,77 +45,84 @@ class GeneradorRecibos:
         # Create the PDF
         c = canvas.Canvas(filename, pagesize=(width, height))
         c.setFont("Helvetica", 10)  # Mindful font
-
         # Start position for content
-        x = 6 * mm  # 1 cm margin
+        x = 20 * mm  # 1 cm margin
         y = height - 30 * mm  # Start 4 cm from the top
 
-        # Store name (centered)
-        c.setFont("Helvetica-Bold", 15)
-        c.drawCentredString(width / 2, y, self.store_name.upper())
+        # Store name
+        text_width = c.stringWidth(self.store_name, "Helvetica-Bold", 14)
+        x= (width - text_width) / 2
+        c.setFont("Helvetica-Bold", 14)
+        c.drawString(x, y, self.store_name)
         y -= 6 * mm
-
-        # Store address (centered)
+        
+        # Store address
+        text_width = c.stringWidth(self.store_address, "Helvetica", 12)
+        x = (width - text_width) / 2
         c.setFont("Helvetica", 12)
-        c.drawCentredString(width / 2, y, self.store_address)
+        c.drawString(x, y, self.store_address)
         y -= 8 * mm
-
+        x = 6 * mm
         # Date and ticket number
+        #c.setFont("Helvetica", 10)
+        #date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        #c.drawString(x, y, f"Fecha: {date}")
+        #y -= 5 * mm
+        #c.drawString(x, y, f"Recibo #{ticket_number}")
+        #y -= 7 * mm
         c.setFont("Helvetica", 10)
-        date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        c.drawString(x, y, f"Fecha: {date}")
-        y -= 5 * mm
-        c.drawString(x, y, f"Recibo #{ticket_number}")
-        y -= 7 * mm
-
+        date = datetime.now().strftime("%d/%m/%y")
+        c.drawString(x, y, f"FECHA: {date}")
+        x=38*mm
+        c.drawString(x, y, f"TICKET N°{ticket_number}")
+        y-=7*mm
+        x=6*mm
         # Table-like information: Article - Price - Quantity - Subtotal
-        c.setFont("Courier-Bold", 9)
+        c.setFont("Helvetica-Bold", 9)
         c.line(x, y, width - x, y)
         y -= 3 * mm
-        c.drawString(x, y,"ARTÍCULO     PRECIO CANT. IMPORTE")
+        c.drawString(x + 2 * mm, y, "ARTÍCULO")
+        c.drawString(x + 24 * mm, y, "PRECIO")
+        c.drawString(x + 37 * mm, y, "CANT.")
+        c.drawString(x + 48 * mm, y, "IMPORTE")
         y -= 1 * mm
         c.line(x, y, width - x, y)
-        y -= 4 * mm
+        y -= 5 * mm
 
-        c.setFont("Courier", 7)
+        c.setFont("Helvetica", 7)
         for item in items:
             article, price, quantity = item
             subtotal = price * quantity
-            # 1234567890123456 89012345 7890123 567890123
-            # 1234567890123456 12345678 1234567 123456789
-            # ARTÍCULO           PRECIO   CANT.   IMPORTE
-            item_str = ''
-            item_str += article[:15].upper().ljust(15) + ' '
-            item_str += f"{price:.2f}".rjust(8) + ' '
-            item_str += f"{quantity:.2f}".rjust(7) + ' '
-            item_str += f"{subtotal:.2f}".rjust(9) + ' '
-            c.drawString(x, y, item_str)
-            y -= 4 * mm
-        
+            c.drawString(x, y, article[:18].upper())
+            c.drawString(x + 29 * mm, y, f"{price:.2f}")
+            c.drawString(x + 45 * mm, y, f"{quantity}")
+            c.drawString(x + 56 * mm, y, f"{subtotal:.2f}")
+            y -= 5 * mm
+
         # Payment
         c.line(x, y, width - x, y)
         y -= 4 * mm
         c.setFont("Helvetica-Bold", 10)
-        c.drawString(x + 2 * mm, y, f"PAGO:")
+        c.drawString(x + 80, y, f"PAGO:")
         c.drawString(width - x - len(f"{payment:.2f}") * 1.9 * mm, y, f"{payment:.2f}")
         y -= 5 * mm
         # Total
-        c.drawString(x + 2 * mm, y, f"TOTAL:")
+        c.drawString(x + 80, y, f"TOTAL:")
         c.drawString(width - x - len(f"{total:.2f}") * 1.9 * mm, y, f"{total:.2f}")
         y -= 5 * mm
         # Change
-        c.drawString(x + 2 * mm, y, f"CAMBIO:")
-        c.drawString(width - x - len(f"{change:.2f}") * 1.9 * mm, y, f"{change:.2f}")
+        c.drawString(x + 80, y, f"CAMBIO:")
+        c.drawString(width - x - len(f"{cambio:.2f}") * 1.9 * mm, y, f"{cambio:.2f}")
         y -= 2 * mm
         c.line(x, y, width - x, y)
         y -= 10 * mm
 
-        # Footer messages (centered)
-        c.setFont("Helvetica-Bold", 14)
-        c.drawCentredString(width / 2, y, "Gracias por su compra")
+        # Footer messages
+        c.setFont("Helvetica-Bold", 11)
+        c.drawString(x + 27, y, "Gracias por su compra")
         y -= 5 * mm
         c.setFont("Helvetica", 10)
-        c.drawCentredString(width / 2, y, "No se aceptan devoluciones")
+        c.drawString(x + 25, y, "No se aceptan devoluciones")
 
         # Save the PDF
         c.save()
@@ -130,22 +140,3 @@ class GeneradorRecibos:
             webbrowser.open(filepath)
         except Exception as e:
             print(f"Error opening PDF: {e}")
-
-def mainRecibo():
-    g = GeneradorRecibos()
-
-    items = [
-        ['Camiseta', 20.0, 2],
-        ['Pantalón', 40.0, 1],
-        ['Zapatos', 60.0, 3],
-        ['12345678901234567890', 10.0, 5]
-    ]
-    total = 8
-    recibido = 10
-    cambio = recibido - total
-    
-    filename = g.create_receipt(items, recibido, total, cambio)
-    g.open_print_dialog(filename)
-
-if __name__=='__main__':
-	mainRecibo()
