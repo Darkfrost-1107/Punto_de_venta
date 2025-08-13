@@ -16,12 +16,12 @@ class GeneradorRecibos:
         self.folder = folder
         self.store_name = store_name
         self.store_address = store_address
-
+         
         # Create the folder if it doesn't exist
         if not os.path.exists(self.folder):
             os.makedirs(self.folder)
 
-    def create_receipt(self, items, payment, total, change):
+    def create_receipt(self, items, payment, total, cambio):
         """
         Generate a receipt PDF with the given items, payment, total, and change.
         
@@ -31,6 +31,9 @@ class GeneradorRecibos:
         :param change: Change to be returned to the customer.
         :return: Path to the generated PDF file.
         """
+        #self.total=total
+        
+
         # Generate a unique ticket number based on existing files
         ticket_number = f"{len([name for name in os.listdir(self.folder) if os.path.isfile(os.path.join(self.folder, name))]):05d}"
         filename = os.path.join(self.folder, f'recibo_{datetime.now().strftime("%d%m%y")}_{ticket_number}.pdf')
@@ -42,29 +45,38 @@ class GeneradorRecibos:
         # Create the PDF
         c = canvas.Canvas(filename, pagesize=(width, height))
         c.setFont("Helvetica", 10)  # Mindful font
-
         # Start position for content
-        x = 6 * mm  # 1 cm margin
+        x = 20 * mm  # 1 cm margin
         y = height - 30 * mm  # Start 4 cm from the top
 
         # Store name
+        text_width = c.stringWidth(self.store_name, "Helvetica-Bold", 14)
+        x= (width - text_width) / 2
         c.setFont("Helvetica-Bold", 14)
         c.drawString(x, y, self.store_name)
         y -= 6 * mm
-
+        
         # Store address
+        text_width = c.stringWidth(self.store_address, "Helvetica", 12)
+        x = (width - text_width) / 2
         c.setFont("Helvetica", 12)
         c.drawString(x, y, self.store_address)
         y -= 8 * mm
-
+        x = 6 * mm
         # Date and ticket number
+        #c.setFont("Helvetica", 10)
+        #date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        #c.drawString(x, y, f"Fecha: {date}")
+        #y -= 5 * mm
+        #c.drawString(x, y, f"Recibo #{ticket_number}")
+        #y -= 7 * mm
         c.setFont("Helvetica", 10)
-        date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        c.drawString(x, y, f"Fecha: {date}")
-        y -= 5 * mm
-        c.drawString(x, y, f"Recibo #{ticket_number}")
-        y -= 7 * mm
-
+        date = datetime.now().strftime("%d/%m/%y")
+        c.drawString(x, y, f"FECHA: {date}")
+        x=38*mm
+        c.drawString(x, y, f"TICKET N°{ticket_number}")
+        y-=7*mm
+        x=6*mm
         # Table-like information: Article - Price - Quantity - Subtotal
         c.setFont("Helvetica-Bold", 9)
         c.line(x, y, width - x, y)
@@ -100,7 +112,7 @@ class GeneradorRecibos:
         y -= 5 * mm
         # Change
         c.drawString(x + 80, y, f"CAMBIO:")
-        c.drawString(width - x - len(f"{change:.2f}") * 1.9 * mm, y, f"{change:.2f}")
+        c.drawString(width - x - len(f"{cambio:.2f}") * 1.9 * mm, y, f"{cambio:.2f}")
         y -= 2 * mm
         c.line(x, y, width - x, y)
         y -= 10 * mm
