@@ -4,7 +4,7 @@
 	orientation: 'vertical'
 	canvas.before:
 		Color:
-			rgba: hex('#159F9A')
+			rgba: hex('#4CADE1')
 		Rectangle:
 			size: self.size
 			pos: self.pos
@@ -13,7 +13,7 @@
 	BoxLayout:
 		canvas.before:
 			Color:
-				rgba: hex('#F2F2F2')
+				rgba: hex('#33A1DC')
 			Rectangle:
 				size: self.size
 				pos: self.pos
@@ -26,7 +26,7 @@
 			Label: 
 				size_hint_y: .15
 				text: 'Bienvenido'
-				color: (0,0,0,1)
+				color: (1,1,1,1)
 			Label:
 				id: signin_notificacion
 				size_hint_y: .15
@@ -49,7 +49,7 @@
 			Button:
 				size_hint_y: .1
 				background_normal: ''
-				background_color: hex('#393939')
+				background_color: hex('#0A2B3D')
 				text: 'Ingresar'
 				on_release: root.verificar_usuario(username.text, password.text)
 			Label:
