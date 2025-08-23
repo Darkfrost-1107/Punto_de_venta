@@ -9,6 +9,9 @@ from recibo import GeneradorRecibos
 from gdrive import GDriveAPI
 #from compras.compras import ComprasWindow
 
+import traceback
+from kivy.logger import Logger
+
 # agregado queriessqlite.create_tables()
 class MainWindow(BoxLayout):
 	QueriesSQLite.create_tables()
@@ -22,6 +25,17 @@ class MainWindow(BoxLayout):
 		self.ids.scrn_ventas.add_widget(self.ventas_widget)
 		#self.ids.scrn_compras.add_widget(self.compras_widget)
 		self.ids.scrn_admin.add_widget(self.admin_widget)
+
+
+	def run(self):
+		try:
+			super().run()
+		except Exception as e:
+			Logger.error(f'App crashed: {e}')
+			Logger.error(traceback.format_exc())
+
+	def handle_exception(self, exc_type, exc_value, exc_traceback):
+		Logger.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
 
 class MainApp(App):
 	def build(self):
