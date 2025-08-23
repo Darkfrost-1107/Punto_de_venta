@@ -1,11 +1,25 @@
+import os
 import sqlite3
 from sqlite3 import Error
+from kivy.utils import platform
 
 class QueriesSQLite:
+    def use_path(path):
+        if platform == 'android':
+            from android.storage import app_storage_path
+            db_path = os.path.join(app_storage_path(), path)
+        else:
+            # Para Windows/Linux/Mac
+            db_path = path
+        return db_path
+
     def create_connection(path):
+        # Obtener ruta correcta según la plataforma
+        db_path = QueriesSQLite.use_path(path)
+
         connection = None
         try:
-            connection = sqlite3.connect(path)
+            connection = sqlite3.connect(db_path)
             print("Connection to SQLite DB successful")
         except Error as e:
             print(f"The error '{e}' occurred")
