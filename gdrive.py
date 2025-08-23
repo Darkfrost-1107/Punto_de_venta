@@ -20,8 +20,9 @@ class GDriveAPI:
         """
         self.credentials_file = credentials_file
         self.token_file = token_file
-        # TODO: Uncomment this
-        # self.service = self._authenticate()
+
+        # TODO: Comment this
+        self.service = self._authenticate()
 
     def _authenticate(self):
         """
